@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.electronwill.nightconfig.core.conversion.Path;
-
 import jakarta.validation.Valid;
 import med.voll.api.medico.DadosAtualizacaoMedico;
 import med.voll.api.medico.DadosCadastroMedico;
@@ -38,7 +36,7 @@ public class MedicoController {
 
    @GetMapping
    public Page<DadosListagemMedico> listar(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
-    return repository.findAll(paginacao).map(DadosListagemMedico::new);
+    return repository.findAllByAtivoTrue(paginacao).map(DadosListagemMedico::new);
    }
 
         @PutMapping
@@ -50,7 +48,8 @@ public class MedicoController {
 
         @DeleteMapping("/{id}")
         @Transactional
-        public void excluir(@PathVariable Long id) {
-            repository.deleteById(id);;
+        public void excluir(@PathVariable Long id) {  //fazendo uma exclusão lógica
+            var medico = repository.getReferenceById(id);
+            medico.excluir();
         }
     }
